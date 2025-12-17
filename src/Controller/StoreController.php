@@ -72,19 +72,40 @@ class StoreController extends AbstractController
             $availableStock = 0; 
         }
 
+        // D. Películas por tienda
+try {
+    $sqlFilms = '
+        SELECT 
+            f.film_id,
+            f.title,
+            COUNT(i.inventory_id) AS copias
+        FROM inventory i
+        JOIN film f ON i.film_id = f.film_id
+        WHERE i.store_id = :storeId
+        GROUP BY f.film_id, f.title
+        ORDER BY f.title
+    ';
+    $films = $conn->executeQuery($sqlFilms, ['storeId' => $storeId])->fetchAllAssociative();
+} catch (\Exception $e) {
+    $films = [];
+}
+
+
         // --- DATOS VISUALES ---
         $staffMembers = $staffRepo->findBy(['store' => $store]);
         $customers = $customerRepo->findBy(['store' => $store], ['createDate' => 'DESC'], 10);
 
         return $this->render('store/show.html.twig', [
-            'store' => $store,
-            'staff_members' => $staffMembers,
-            'customers' => $customers,
-            'stats' => [
-                'income' => $totalIncome ?? 0,
-                'total_rentals' => $totalRentals ?? 0,
-                'available_stock' => $availableStock ?? 0
-            ]
-        ]);
+    'store' => $store,
+    'staff_members' => $staffMembers,
+    'customers' => $customers,
+    'films' => $films, // 👈 NUEVO
+    'stats' => [
+        'income' => $totalIncome ?? 0,
+        'total_rentals' => $totalRentals ?? 0,
+        'available_stock' => $availableStock ?? 0
+    ]
+]);
+
     }
 }
