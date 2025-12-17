@@ -1,0 +1,218 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ actor.firstName }} {{ actor.lastName }}{% endblock %}
+
+{% block body %}
+
+<!-- HEADER DEL ACTOR -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold">
+        <i class="bi bi-person-circle text-primary"></i>
+        {{ actor.firstName }} {{ actor.lastName }}
+    </h1>
+    <div class="d-flex gap-2">
+        <a href="{{ path('actor_edit', {id: actor.actorId}) }}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a href="{{ path('actor_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<p class="text-muted mb-4"><strong>ID:</strong> {{ actor.actorId }}</p>
+
+<!-- ========== ESTADÍSTICAS ========== -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h4 class="mb-3">
+            <i class="bi bi-graph-up text-primary"></i> Estadísticas
+        </h4>
+    </div>
+
+    <!-- Total de Películas -->
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-film fs-1 text-primary mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.totalFilms }}</h3>
+                <small class="text-muted">Películas Totales</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duración Promedio -->
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-clock fs-1 text-info mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.avgDuration }}</h3>
+                <small class="text-muted">Duración Promedio (min)</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Año Más Productivo -->
+    {% if stats.mostProductiveYear %}
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-calendar-star fs-1 text-warning mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.mostProductiveYear.year }}</h3>
+                <small class="text-muted">Año Más Productivo</small>
+                <div class="mt-1">
+                    <span class="badge bg-warning">{{ stats.mostProductiveYear.filmCount }} películas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Rating Más Común -->
+    {% if stats.mostCommonRating %}
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-star-fill fs-1 text-success mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.mostCommonRating.rating }}</h3>
+                <small class="text-muted">Rating Más Común</small>
+                <div class="mt-1">
+                    <span class="badge bg-success">{{ stats.mostCommonRating.count }} películas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- CATEGORÍAS MÁS FRECUENTES -->
+{% if stats.categories|length > 0 %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-tags-fill text-primary"></i> Categorías Más Frecuentes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for category in stats.categories %}
+                    <div class="col-md-4 col-sm-6 mb-3">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <span class="fw-bold">{{ category.categoryName }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ category.filmCount }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- RANGO DE DURACIÓN -->
+{% if stats.totalFilms > 0 %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">
+                    <i class="bi bi-speedometer2"></i> Rango de Duración de Películas
+                </h6>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="text-center mb-2">
+                        <div class="text-muted small">Mínima</div>
+                        <div class="fs-4 fw-bold text-success">{{ stats.minDuration }} min</div>
+                    </div>
+                    <div class="flex-grow-1 mx-3 mb-2" style="min-width: 200px;">
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-gradient bg-primary" 
+                                 role="progressbar" 
+                                 style="width: 50%">
+                            </div>
+                        </div>
+                        <div class="text-center mt-1">
+                            <small class="text-muted">Promedio: {{ stats.avgDuration }} min</small>
+                        </div>
+                    </div>
+                    <div class="text-center mb-2">
+                        <div class="text-muted small">Máxima</div>
+                        <div class="fs-4 fw-bold text-danger">{{ stats.maxDuration }} min</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ========== FILMOGRAFÍA ========== -->
+<h2 class="mb-3">
+    <i class="bi bi-camera-reels text-primary"></i> 
+    Filmografía ({{ films|length }} películas)
+</h2>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            {% for film in films %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-film text-muted me-2"></i>
+                        <strong>{{ film.title }}</strong>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-secondary">{{ film.releaseYear }}</span>
+                        <form method="post" 
+                              action="{{ path('actor_remove_film', { actorId: actor.actorId, filmId: film.id }) }}"
+                              onsubmit="return confirm('¿Remover esta película del actor?')"
+                              class="d-inline">
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </form>
+                    </div>
+                </li>
+            {% else %}
+                <li class="list-group-item text-center text-muted">
+                    <i class="bi bi-inbox"></i> No hay películas asignadas
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- ========== ASIGNAR PELÍCULA ========== -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-plus-circle"></i> Asignar Nueva Película
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ path('actor_assign_film', { id: actor.actorId }) }}">
+            <div class="row align-items-end">
+                <div class="col-md-9 mb-2 mb-md-0">
+                    <label class="form-label">Seleccionar Película</label>
+                    <select name="film_id" class="form-select" required>
+                        <option value="">-- Elige una película --</option>
+                        {% for film in allFilms %}
+                            {% if film.id not in assignedFilmIds %}
+                                <option value="{{ film.id }}">{{ film.title }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Asignar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

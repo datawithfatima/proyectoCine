@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Película - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Card -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>Crear Nueva Película
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título *</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="releaseYear" class="form-label">Año de lanzamiento</label>
+                                <input type="number" class="form-control" id="releaseYear" name="releaseYear" min="1900" max="2024">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="length" class="form-label">Duración (minutos)</label>
+                                <input type="number" class="form-control" id="length" name="length" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Clasificación</label>
+                            <select class="form-select" id="rating" name="rating">
+                                <option value="G">G - General</option>
+                                <option value="PG">PG - Guía Parental</option>
+                                <option value="PG-13">PG-13 - Mayores de 13</option>
+                                <option value="R">R - Restringido</option>
+                                <option value="NC-17">NC-17 - Adultos</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('film_index') }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Crear Película
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

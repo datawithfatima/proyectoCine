@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../vendor/symfony/routing/Loader/schema/routing.schema.json
+
+# This file is the entry point to configure the routes of your app.
+# Methods with the #[Route] attribute are automatically imported.
+# See also https://symfony.com/doc/current/routing.html
+
+# To list all registered routes, run the following command:
+#   bin/console debug:router
+
+# config/routes.yaml
+
+# RUTAS DE PELÍCULAS - DEFINIDAS MANUALMENTE
+film_index:
+    path: /film
+    controller: App\Controller\FilmController::index
+    methods: GET
+    
+film_new:
+    path: /film/new
+    controller: App\Controller\FilmController::new
+    methods: GET|POST
+    
+film_show:
+    path: /film/{id}
+    controller: App\Controller\FilmController::show
+    methods: GET
+    requirements:
+        id: '\d+'
+        
+film_edit:
+    path: /film/{id}/edit
+    controller: App\Controller\FilmController::edit
+    methods: GET|POST
+    requirements:
+        id: '\d+'
+        
+film_delete:
+    path: /film/{id}/delete
+    controller: App\Controller\FilmController::delete
+    methods: POST
+    requirements:
+        id: '\d+'
+controllers:
+    resource: ../src/Controller/
+    type: attribute

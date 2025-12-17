@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inventario - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 fw-bold text-gradient">
+                        <i class="bi bi-box-seam"></i> Gestión de Inventario
+                    </h1>
+                    <p class="text-muted">
+                        <i class="bi bi-shop me-1"></i> Disponibilidad de películas por tienda
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ path('inventory_add_copies') }}" class="btn btn-success me-2">
+                        <i class="bi bi-plus-circle me-1"></i> Agregar Copias
+                    </a>
+                    <a href="{{ path('inventory_transfer') }}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left-right me-1"></i> Transferir
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card film-card">
+                <div class="card-header">
+                    <i class="bi bi-funnel me-2"></i> Filtros
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{{ path('inventory_index') }}" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Buscar película</label>
+                            <input type="text" class="form-control" name="search" 
+                                   placeholder="Nombre de la película..." 
+                                   value="{{ search }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Tienda</label>
+                            <select class="form-select" name="store">
+                                <option value="">Todas las tiendas</option>
+                                {% for store in stores %}
+                                    <option value="{{ store.id }}" 
+                                            {% if selectedStore == store.id %}selected{% endif %}>
+                                        Tienda {{ store.id }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                            <a href="{{ path('inventory_index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de inventario -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card film-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-table me-2"></i> Inventario por Película y Tienda
+                        <span class="badge bg-secondary ms-2">{{ inventory|length }} registros</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover film-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th width="30%">PELÍCULA</th>
+                                    <th class="text-center" width="10%">TIENDA</th>
+                                    <th class="text-center" width="12%">TOTAL COPIAS</th>
+                                    <th class="text-center" width="12%">ALQUILADAS</th>
+                                    <th class="text-center" width="12%">DISPONIBLES</th>
+                                    <th class="text-center" width="12%">PRECIO</th>
+                                    <th class="text-center" width="12%">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if inventory|length > 0 %}
+                                    {% for item in inventory %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-film text-primary me-2"></i>
+                                                <strong>{{ item.title }}</strong>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-shop"></i> {{ item.store_id }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary fs-6">{{ item.total_copies }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-warning fs-6">{{ item.rented_copies }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success fs-6">{{ item.available_copies }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="text-success fw-bold">${{ item.rental_rate }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{ path('inventory_availability', {'filmId': item.film_id}) }}" 
+                                               class="btn btn-sm btn-outline-info"
+                                               data-bs-toggle="tooltip" 
+                                               title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5">
+                                            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                                            <p class="text-muted mt-2">No hay registros de inventario</p>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="bi bi-info-circle me-3" style="font-size: 1.5rem;"></i>
+                <div>
+                    <strong>Gestión de Inventario</strong> - Aquí puedes ver la disponibilidad de cada película por tienda.
+                    Las copias alquiladas se muestran en amarillo y las disponibles en verde.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

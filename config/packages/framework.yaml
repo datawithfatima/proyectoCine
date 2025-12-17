@@ -1,0 +1,43 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    
+    # HABILITAR SESIONES (IMPORTANTE)
+    session:
+        handler_id: null
+        cookie_secure: auto
+        cookie_samesite: lax
+        enabled: true
+    
+    # Assets
+    assets: true
+    
+    # PHP errors
+    php_errors:
+        log: true
+    
+    # Validation
+    validation:
+        enabled: true
+    
+    # Serializer
+    serializer:
+        enabled: true
+    
+    # Form
+    form:
+        enabled: true
+    
+    # CSRF Protection
+    csrf_protection: true
+    
+    # HTTP Method Override
+    http_method_override: true
+    
+    # Handle all types of exceptions
+    handle_all_throwables: true
+    
+    # Trusted hosts
+    trusted_hosts: []
+    
+    # Trusted proxies
+    trusted_proxies: []

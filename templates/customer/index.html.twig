@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-3">
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-people-fill text-primary me-2"></i> Clientes
+        </h2>
+        <a href="{{ path('customer_new') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nuevo Cliente
+        </a>
+    </div>
+
+    <form method="get" class="d-flex gap-2 flex-wrap align-items-center">
+        <input
+            type="text"
+            name="q"
+            value="{{ query|default('') }}"
+            class="form-control"
+            placeholder="Buscar por nombre, apellido o email"
+            style="min-width: 220px;"
+        >
+
+        <select name="store" class="form-select">
+            <option value="">Todas las tiendas</option>
+            <option value="1" {{ store == '1' ? 'selected' }}>Tienda 1</option>
+            <option value="2" {{ store == '2' ? 'selected' }}>Tienda 2</option>
+        </select>
+
+        <select name="status" class="form-select">
+            <option value="">Todos</option>
+            <option value="active"   {{ status == 'active'   ? 'selected' }}>Activos</option>
+            <option value="inactive" {{ status == 'inactive' ? 'selected' }}>Inactivos</option>
+        </select>
+
+        <input
+            type="text"
+            name="country"
+            value="{{ country|default('') }}"
+            class="form-control"
+            placeholder="País"
+            style="min-width: 130px;"
+        >
+
+        <input
+            type="text"
+            name="city"
+            value="{{ city|default('') }}"
+            class="form-control"
+            placeholder="Ciudad"
+            style="min-width: 130px;"
+        >
+
+        <button class="btn btn-primary">
+            <i class="bi bi-search"></i>
+        </button>
+    </form>
+</div>
+
+{% if totalItems > 0 %}
+    <div class="mb-3">
+        <small class="text-muted">
+            Mostrando {{ customers|length }} de {{ totalItems }} clientes
+        </small>
+    </div>
+{% else %}
+    <div class="alert alert-warning">
+        <i class="bi bi-info-circle"></i> No se encontraron clientes con esos filtros.
+    </div>
+{% endif %}
+
+<div class="row">
+    {% for c in customers %}
+        <div class="col-md-4 col-lg-3 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-circle fs-1 text-secondary"></i>
+                            <div>
+                                <h5 class="fw-bold mb-0">
+                                    {{ c.lastName }} {{ c.firstName }}
+                                </h5>
+                                <small class="text-muted">Cliente #{{ c.id }}</small>
+                            </div>
+                        </div>
+
+                        {% if c.active %}
+                            <span class="badge bg-success">Activo</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactivo</span>
+                        {% endif %}
+                    </div>
+
+                    <p class="mb-1">
+                        <i class="bi bi-envelope"></i>
+                        <span class="text-muted">{{ c.email ?? 'Sin email' }}</span>
+                    </p>
+
+                    <p class="mb-1">
+                        <i class="bi bi-geo-alt"></i>
+                        <small class="text-muted">
+                            {{ c.address.address }},
+                            {{ c.address.city.city }}
+                            ({{ c.address.city.country.country }})
+                        </small>
+                    </p>
+
+                    <p class="mb-3">
+                        <i class="bi bi-shop"></i>
+                        <small class="text-muted">Tienda {{ c.store.storeId }}</small>
+                    </p>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ path('customer_show', { id: c.id }) }}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+
+                        <a href="{{ path('customer_edit', { id: c.id }) }}"
+                           class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <form method="post"
+                              action="{{ path('customer_deactivate', { id: c.id }) }}"
+                              onsubmit="return confirm('¿Marcar cliente como inactivo?')">
+                            <input type="hidden" name="_token"
+                                   value="{{ csrf_token('deactivate_customer_' ~ c.id) }}">
+                            <button class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-slash-circle"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

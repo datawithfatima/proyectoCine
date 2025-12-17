@@ -1,0 +1,386 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard General - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold text-gradient">
+                <i class="bi bi-speedometer2"></i> Dashboard General
+            </h1>
+            <p class="text-muted">
+                <i class="bi bi-graph-up me-1"></i> Panel de análisis y métricas del sistema
+            </p>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-gradient-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3" style="font-size: 3rem;">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">{{ total_customers }}</div>
+                        <div>Clientes Activos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-gradient-success text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3" style="font-size: 3rem;">
+                        <i class="bi bi-film"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">{{ total_films }}</div>
+                        <div>Total Películas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-gradient-warning text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3" style="font-size: 3rem;">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">{{ active_rentals }}</div>
+                        <div>Alquileres Activos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card bg-gradient-danger text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3" style="font-size: 3rem;">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">${{ monthly_income|number_format(2) }}</div>
+                        <div>Ingresos del Mes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos y tablas -->
+    <div class="row">
+        <!-- Películas más alquiladas -->
+        <div class="col-lg-6 mb-4">
+            <div class="card film-card h-100">
+                <div class="card-header">
+                    <i class="bi bi-trophy me-2"></i> Top 5 Películas Más Alquiladas
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="mostRentedChart"></canvas>
+                    </div>
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Película</th>
+                                    <th class="text-center">Alquileres</th>
+                                    <th class="text-center">Copias</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for film in most_rented %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ path('film_show', {'id': film.id}) }}">
+                                            {{ film.title }}
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">{{ film.rental_count }}</span>
+                                    </td>
+                                    <td class="text-center">{{ film.copies }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top clientes -->
+        <div class="col-lg-6 mb-4">
+            <div class="card film-card h-100">
+                <div class="card-header">
+                    <i class="bi bi-person-badge me-2"></i> Top 5 Clientes
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="topCustomersChart"></canvas>
+                    </div>
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th class="text-center">Alquileres</th>
+                                    <th class="text-end">Total Gastado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in top_customers %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-person-circle text-primary me-1"></i>
+                                        {{ customer.name }}
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">{{ customer.rental_count }}</span>
+                                    </td>
+                                    <td class="text-end">${{ customer.total_spent|number_format(2) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Categorías populares -->
+        <div class="col-lg-6 mb-4">
+            <div class="card film-card h-100">
+                <div class="card-header">
+                    <i class="bi bi-tags me-2"></i> Categorías Más Populares
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="categoriesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingresos mensuales -->
+        <div class="col-lg-6 mb-4">
+            <div class="card film-card h-100">
+                <div class="card-header">
+                    <i class="bi bi-graph-up-arrow me-2"></i> Ingresos del Mes (Últimos 6 Meses)
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="monthlyIncomeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card film-card">
+                <div class="card-header">
+                    <i class="bi bi-grid-3x3-gap me-2"></i> Accesos Rápidos
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{{ path('film_index') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-film d-block mb-2" style="font-size: 2rem;"></i>
+                                Gestionar Películas
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('inventory_index') }}" class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-box-seam d-block mb-2" style="font-size: 2rem;"></i>
+                                Ver Inventario
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('inventory_add_copies') }}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="bi bi-plus-square d-block mb-2" style="font-size: 2rem;"></i>
+                                Agregar Copias
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('inventory_transfer') }}" class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-arrow-left-right d-block mb-2" style="font-size: 2rem;"></i>
+                                Transferir Copias
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard cargando gráficos...');
+    console.log('Películas:', {{ most_rented|json_encode|raw }});
+    console.log('Clientes:', {{ top_customers|json_encode|raw }});
+    console.log('Categorías:', {{ popular_categories|json_encode|raw }});
+    console.log('Ingresos:', {{ monthly_rentals|json_encode|raw }});
+    
+    // Películas más alquiladas
+    const mostRentedCtx = document.getElementById('mostRentedChart').getContext('2d');
+    new Chart(mostRentedCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for film in most_rented %}'{{ film.title|slice(0, 20) }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Alquileres',
+                data: [{% for film in most_rented %}{{ film.rental_count }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(52, 152, 219, 0.8)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                } 
+            }
+        }
+    });
+
+    // Top clientes
+    const topCustomersCtx = document.getElementById('topCustomersChart').getContext('2d');
+    new Chart(topCustomersCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for customer in top_customers %}'{{ customer.name }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Alquileres',
+                data: [{% for customer in top_customers %}{{ customer.rental_count }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(46, 204, 113, 0.8)'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: { 
+                x: { 
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                } 
+            }
+        }
+    });
+
+    // Categorías populares
+    const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+    new Chart(categoriesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for cat in popular_categories %}'{{ cat.name }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for cat in popular_categories %}{{ cat.rental_count }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',
+                    'rgba(46, 204, 113, 0.8)',
+                    'rgba(155, 89, 182, 0.8)',
+                    'rgba(241, 196, 15, 0.8)',
+                    'rgba(231, 76, 60, 0.8)',
+                    'rgba(52, 73, 94, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        }
+    });
+
+    // Ingresos mensuales
+    const monthlyIncomeCtx = document.getElementById('monthlyIncomeChart').getContext('2d');
+    new Chart(monthlyIncomeCtx, {
+        type: 'line',
+        data: {
+            labels: [{% for month in monthly_rentals %}'{{ month.month }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Ingresos ($)',
+                data: [{% for month in monthly_rentals %}{{ month.income }}{% if not loop.last %},{% endif %}{% endfor %}],
+                borderColor: 'rgba(231, 76, 60, 1)',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(2);
+                        }
+                    }
+                } 
+            }
+        }
+    });
+});
+</script>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+</style>
+{% endblock %}

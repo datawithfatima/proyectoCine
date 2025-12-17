@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Disponibilidad - {{ film.title }} - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Botón volver -->
+    <a href="{{ path('inventory_index') }}" class="btn btn-outline-secondary mb-4">
+        <i class="bi bi-arrow-left me-2"></i> Volver al inventario
+    </a>
+
+    <!-- Información de la película -->
+    <div class="card film-card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="bi bi-film me-2"></i> {{ film.title }}
+            </h4>
+            <span class="badge bg-light text-dark fs-6">
+                <i class="bi bi-currency-dollar"></i> ${{ film.rental_rate }}
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <h2 class="text-primary">{{ availability|length }}</h2>
+                    <p class="text-muted mb-0">Total Copias</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h2 class="text-success">
+                        {{ availability|filter(item => item.status == 'Disponible')|length }}
+                    </h2>
+                    <p class="text-muted mb-0">Disponibles</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h2 class="text-warning">
+                        {{ availability|filter(item => item.status == 'Alquilada')|length }}
+                    </h2>
+                    <p class="text-muted mb-0">Alquiladas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disponibilidad por tienda -->
+    {% for store_id in [1, 2] %}
+        {% set items = availability|filter(item => item.store_id == store_id) %}
+        {% if items|length > 0 %}
+        <div class="card film-card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-shop me-2"></i> Tienda {{ store_id }}
+                </h5>
+                <div>
+                    <span class="badge bg-success me-1">
+                        {{ items|filter(i => i.status == 'Disponible')|length }} Disponibles
+                    </span>
+                    <span class="badge bg-warning">
+                        {{ items|filter(i => i.status == 'Alquilada')|length }} Alquiladas
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th width="15%">ID Inventario</th>
+                                <th width="15%">Estado</th>
+                                <th width="20%">Fecha Alquiler</th>
+                                <th width="20%">Fecha Devolución</th>
+                                <th width="20%">Cliente</th>
+                                <th width="10%" class="text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#{{ item.inventory_id }}</span>
+                                </td>
+                                <td>
+                                    {% if item.status == 'Disponible' %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Disponible
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-clock"></i> Alquilada
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.rental_date %}
+                                        <small>{{ item.rental_date|date('d/m/Y H:i') }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.return_date %}
+                                        <small>{{ item.return_date|date('d/m/Y H:i') }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.customer_name %}
+                                        <i class="bi bi-person-circle text-primary me-1"></i>
+                                        <small>{{ item.customer_name }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.status == 'Disponible' %}
+                                        <form method="post" 
+                                              action="{{ path('inventory_remove', {'inventoryId': item.inventory_id}) }}"
+                                              style="display: inline;">
+                                            <input type="hidden" name="_token" 
+                                                   value="{{ csrf_token('remove' ~ item.inventory_id) }}">
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('¿Dar de baja esta copia?')"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Dar de baja">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+
+    {% if availability|length == 0 %}
+        <div class="alert alert-warning text-center">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            No hay copias registradas para esta película en ninguna tienda.
+        </div>
+    {% endif %}
+
+    <!-- Información adicional -->
+    <div class="alert alert-info d-flex align-items-center mt-4">
+        <i class="bi bi-info-circle me-3" style="font-size: 1.5rem;"></i>
+        <div>
+            <strong>Detalles de disponibilidad</strong> - Aquí puedes ver cada copia individual,
+            su estado actual, y dar de baja las copias que no estén alquiladas.
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

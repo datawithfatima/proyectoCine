@@ -1,0 +1,302 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inicio - CineProyecto{% endblock %}
+
+{% block body %}
+    
+    <div class="hero-section d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="fw-bold text-primary mb-2">
+                <i class="bi bi-camera-reels me-2"></i>Bienvenido a ProyectoCine
+            </h1>
+            <p class="text-muted mb-4">
+                <i class="bi bi-info-circle me-1"></i> Sistema integral de gestión cinematográfica y alquileres.
+            </p>
+            <a href="#" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-play-circle me-2"></i>Catalogo principal
+            </a>
+        </div>
+        <div class="d-none d-md-block text-primary opacity-25">
+            <i class="bi bi-film" style="font-size: 8rem;"></i>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card stat-card h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary me-3">
+                        <i class="bi bi-film fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-0 small">Películas Total</p>
+                        <h3 class="fw-bold mb-0">{{ stats.total_peliculas }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success me-3">
+                        <i class="bi bi-people fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-0 small">Clientes Activos</p>
+                        <h3 class="fw-bold mb-0">{{ stats.total_clientes }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning me-3">
+                        <i class="bi bi-bag-check fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-0 small">Rentas Activas</p>
+                        <h3 class="fw-bold mb-0">{{ stats.rentas_activas }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-danger bg-opacity-10 p-3 rounded-circle text-danger me-3">
+                        <i class="bi bi-shop fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-0 small">Sucursales</p>
+                        <h3 class="fw-bold mb-0">{{ stats.tiendas }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm p-4">
+                <h5 class="fw-bold mb-3">Acciones Rápidas</h5>
+                <div class="d-flex gap-3">
+    
+                <a href="{{ path('film_new') }}" class="btn btn-light border text-start p-3 w-100 text-decoration-none">
+                    <i class="bi bi-plus-circle text-primary me-2"></i> 
+                    <span class="text-dark">Nueva Película</span>
+                </a>
+
+                <a href="{{ path('app_payment_new') }}" class="btn btn-light border text-start p-3 w-100 text-decoration-none">
+                    <i class="bi bi-credit-card text-success me-2"></i> 
+                    <span class="text-dark">Nuevo Pago</span>
+                </a>
+
+                <a href="{{ path('app_store_index') }}" class="btn btn-light border text-start p-3 w-100 text-decoration-none">
+                    <i class="bi bi-shop text-warning me-2"></i> 
+                    <span class="text-dark">Sucursales</span>
+                </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row mt-4 g-4">
+        <!-- Películas más alquiladas -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-trophy text-warning me-2"></i>
+                        Películas Más Alquiladas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="mostRentedChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top clientes -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-person-badge text-success me-2"></i>
+                        Top Clientes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="topCustomersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingresos del mes -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-graph-up-arrow text-danger me-2"></i>
+                        Ingresos del Mes (Últimos 6 Meses)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="monthlyIncomeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categorías populares -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-tags text-primary me-2"></i>
+                        Categorías Populares
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="categoriesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Películas más alquiladas
+    const mostRentedCtx = document.getElementById('mostRentedChart').getContext('2d');
+    new Chart(mostRentedCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for film in stats.most_rented %}'{{ film.title|slice(0, 20) }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Alquileres',
+                data: [{% for film in stats.most_rented %}{{ film.rental_count }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(52, 152, 219, 0.8)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                } 
+            }
+        }
+    });
+
+    // Top clientes
+    const topCustomersCtx = document.getElementById('topCustomersChart').getContext('2d');
+    new Chart(topCustomersCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for customer in stats.top_customers %}'{{ customer.name }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Alquileres',
+                data: [{% for customer in stats.top_customers %}{{ customer.rental_count }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(46, 204, 113, 0.8)'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
+            scales: { 
+                x: { 
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                } 
+            }
+        }
+    });
+
+    // Categorías populares
+    const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+    new Chart(categoriesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for cat in stats.popular_categories %}'{{ cat.name }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for cat in stats.popular_categories %}{{ cat.rental_count }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',
+                    'rgba(46, 204, 113, 0.8)',
+                    'rgba(155, 89, 182, 0.8)',
+                    'rgba(241, 196, 15, 0.8)',
+                    'rgba(231, 76, 60, 0.8)',
+                    'rgba(52, 73, 94, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top' }
+            }
+        }
+    });
+
+    // Ingresos mensuales
+    const monthlyIncomeCtx = document.getElementById('monthlyIncomeChart').getContext('2d');
+    new Chart(monthlyIncomeCtx, {
+        type: 'line',
+        data: {
+            labels: [{% for month in stats.monthly_rentals %}'{{ month.month }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Ingresos ($)',
+                data: [{% for month in stats.monthly_rentals %}{{ month.income }}{% if not loop.last %},{% endif %}{% endfor %}],
+                borderColor: 'rgba(231, 76, 60, 1)',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(2);
+                        }
+                    }
+                } 
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Empleado{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            {# TARJETA PRINCIPAL #}
+            <div class="card border-0 shadow-lg overflow-hidden rounded-3">
+                
+                {# CABECERA CON DEGRADADO #}
+                <div class="card-header p-4 text-white" style="background: linear-gradient(135deg, #0f9b0f 0%, #52c234 100%);">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white text-success rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user-plus fa-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0 fw-bold">Registrar Nuevo Empleado</h3>
+                            <p class="mb-0 opacity-75">Completa la información para dar de alta en el sistema.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-5 bg-white">
+                    {{ form_start(form) }}
+                        
+                        <div class="row g-5">
+                            {# COLUMNA IZQUIERDA: DATOS PERSONALES #}
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-4">
+                                    <i class="fas fa-id-card me-2"></i> Datos Personales
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Nombre</label>
+                                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control', 'placeholder': 'Ej. Juan'}}) }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">Apellido</label>
+                                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Ej. Pérez'}}) }}
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold small text-muted">Correo Electrónico</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fas fa-envelope text-muted"></i></span>
+                                            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'juan@sakila.com'}}) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold small text-muted">Dirección Física</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-danger"></i></span>
+                                            {{ form_widget(form.address, {'attr': {'class': 'form-select'}}) }}
+                                        </div>
+                                        <small class="text-muted" style="font-size: 0.8rem;">Selecciona una dirección registrada.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {# COLUMNA DERECHA: CUENTA Y ACCESO #}
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-4">
+                                    <i class="fas fa-user-shield me-2"></i> Cuenta y Acceso
+                                </h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Nombre de Usuario</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">@</span>
+                                        {{ form_widget(form.username, {'attr': {'class': 'form-control', 'placeholder': 'jperez'}}) }}
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Contraseña</label>
+                                    {{ form_widget(form.password, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-muted">Asignar a Tienda</label>
+                                    {{ form_widget(form.store, {'attr': {'class': 'form-select border-primary'}}) }}
+                                </div>
+
+                                <div class="p-3 bg-light rounded border d-flex align-items-center">
+                                    <div class="form-check form-switch mb-0">
+                                        {{ form_widget(form.active, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
+                                        <label class="form-check-label ms-2 fw-bold" for="{{ form.active.vars.id }}">¿Empleado Activo?</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ path('app_staff_index') }}" class="btn btn-light border px-4">Cancelar</a>
+                            <button type="submit" class="btn btn-warning px-4 fw-bold text-dark shadow-sm">
+                                <i class="fas fa-save me-2"></i> Registrar
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

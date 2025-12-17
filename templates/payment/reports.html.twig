@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reporte de Ingresos{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-chart-line text-info"></i> Reporte de Ingresos</h1>
+        <a href="{{ path('app_payment_index') }}" class="btn btn-outline-secondary">
+            &larr; Volver al listado
+        </a>
+    </div>
+
+    <div class="row">
+        
+        {# COLUMNA IZQUIERDA: La Tabla de Datos #}
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    Desglose por Período
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mes (Año-Mes)</th>
+                                <th class="text-end">Ingresos ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in reportData %}
+                                <tr>
+                                    <td>{{ row.period }}</td>
+                                    <td class="text-end fw-bold text-success">
+                                        ${{ row.total|number_format(2, '.', ',') }}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="2">No hay datos registrados.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# COLUMNA DERECHA: El Gráfico Visual #}
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    Gráfico de Tendencia
+                </div>
+                <div class="card-body">
+                    <canvas id="incomeChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{# SCRIPT PARA EL GRÁFICO (Chart.js) #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('incomeChart').getContext('2d');
+        
+        // Recibimos los datos desde Symfony (Twg)
+        const labels = {{ chartLabels|raw }};
+        const data = {{ chartData|raw }};
+
+        new Chart(ctx, {
+            type: 'bar', // Tipo de gráfico: 'bar' (barras) o 'line' (línea)
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Ingresos Totales ($)',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)', // Color azulito
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

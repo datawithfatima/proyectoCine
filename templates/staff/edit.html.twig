@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Empleado{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            {# TARJETA DE EDICIÓN #}
+            <div class="card border-0 shadow-lg overflow-hidden rounded-3 mb-5">
+                
+                {# CABECERA NARANJA #}
+                <div class="card-header p-4 text-white" style="background: linear-gradient(135deg, #f09819 0%, #edde5d 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-white text-warning rounded-circle p-3 me-3 d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 50px; height: 50px;">
+                                {{ staff.firstName|first }}{{ staff.lastName|first }}
+                            </div>
+                            <div>
+                                <h3 class="mb-0 fw-bold">Editando Perfil</h3>
+                                <p class="mb-0 text-dark opacity-75">Empleado ID #{{ staff.staffId }}</p>
+                            </div>
+                        </div>
+                        {# Badge de estado actual #}
+                        {% if staff.active %}
+                            <span class="badge bg-success shadow-sm"><i class="fas fa-check"></i> Activo</span>
+                        {% else %}
+                            <span class="badge bg-danger shadow-sm"><i class="fas fa-ban"></i> Inactivo</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-body p-5 bg-white">
+                    {{ form_start(form) }}
+                        
+                        <div class="row g-5">
+                            {# IZQUIERDA: DATOS PERSONALES #}
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-muted fw-bold mb-3">Información Personal</h6>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small">Nombre</label>
+                                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small">Apellido</label>
+                                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small">Email</label>
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small">Dirección</label>
+                                        {{ form_widget(form.address, {'attr': {'class': 'form-select'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {# DERECHA: SISTEMA #}
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-muted fw-bold mb-3">Configuración de Sistema</h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label small">Usuario</label>
+                                    {{ form_widget(form.username, {'attr': {'class': 'form-control bg-light', 'readonly': 'readonly'}}) }}
+                                    <small class="text-muted" style="font-size: 0.75rem;">El nombre de usuario no se recomienda cambiar.</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small">Contraseña</label>
+                                    {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'Dejar vacío para mantener la actual'}}) }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small">Tienda Asignada</label>
+                                    {{ form_widget(form.store, {'attr': {'class': 'form-select'}}) }}
+                                </div>
+
+                                <div class="form-check form-switch mt-4">
+                                    {{ form_widget(form.active, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
+                                    <label class="form-check-label" for="{{ form.active.vars.id }}">Cuenta habilitada para acceso</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ path('app_staff_index') }}" class="btn btn-light border px-4">Cancelar</a>
+                            <button type="submit" class="btn btn-warning px-4 fw-bold text-dark shadow-sm">
+                                <i class="fas fa-save me-2"></i> Actualizar Datos
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            {# ZONA DE PELIGRO (SEPARADA Y ELEGANTE) #}
+            <div class="card border-danger border-1 shadow-sm rounded-3">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <h5 class="text-danger fw-bold mb-1"><i class="fas fa-exclamation-triangle me-2"></i> Eliminar Empleado</h5>
+                        <p class="text-muted small mb-0">Esta acción no se puede deshacer. Se perderá el historial asociado si no está archivado.</p>
+                    </div>
+                    
+                    <form method="post" action="{{ path('app_staff_delete', {'staffId': staff.staffId}) }}" onsubmit="return confirm('¿Estás SEGURO de eliminar a {{ staff.firstName }}?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ staff.staffId) }}">
+                        <button class="btn btn-outline-danger fw-bold">
+                            Eliminar Definitivamente
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

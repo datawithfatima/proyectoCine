@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cliente{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold">
+        <i class="bi bi-person-circle text-primary"></i>
+        {{ customer.firstName }} {{ customer.lastName }}
+    </h1>
+    <div class="d-flex gap-2">
+        <a href="{{ path('customer_edit', {id: customer.id}) }}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a href="{{ path('customer_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<p class="text-muted mb-2">
+    <strong>ID:</strong> {{ customer.id }} |
+    <strong>Tienda:</strong> {{ customer.store.storeId }} |
+    <strong>Estado:</strong>
+    {% if customer.active %}
+        <span class="badge bg-success">Activo</span>
+    {% else %}
+        <span class="badge bg-danger">Inactivo</span>
+    {% endif %}
+</p>
+
+<p class="mb-2">
+    <i class="bi bi-envelope"></i>
+    {{ customer.email ?? 'Sin email' }}
+</p>
+
+<p class="mb-2">
+    <i class="bi bi-geo-alt"></i>
+    {{ customer.address.address }},
+    {{ customer.address.city.city }}
+    ({{ customer.address.city.country.country }})
+</p>
+
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-graph-up"></i> Estadísticas del Cliente
+        </h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-0">
+            Aquí luego podemos mostrar:
+            total de alquileres, total pagado, películas pendientes, etc.
+        </p>
+    </div>
+</div>
+{% endblock %}

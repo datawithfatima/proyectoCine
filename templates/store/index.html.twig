@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tiendas Sakila{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4"><i class="fas fa-store text-primary"></i> Nuestras Tiendas</h1>
+
+    <div class="row">
+        {% for store in stores %}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100 border-primary">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between">
+                        <span class="fs-5">Tienda #{{ store.storeId }}</span>
+                        <i class="fas fa-building fa-2x"></i>
+
+                        <a href="{{ path('app_store_show', {'storeId': store.storeId}) }}" class="btn btn-info">
+                        Ver Detalles <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>  
+                    <div class="card-body">
+                        
+                        {# SECCIÓN DIRECCIÓN #}
+                        <h5 class="card-title text-dark">Ubicación</h5>
+                        <p class="card-text text-muted">
+                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                            {{ store.address.address }}<br>
+                            <span class="ms-4">{{ store.address }}</span>
+                        </p>
+                        <p>
+                            <i class="fas fa-phone me-2"></i> {{ store.address.phone }}
+                        </p>
+
+                        <hr>
+
+                        {# SECCIÓN GERENTE #}
+                        <h5 class="card-title text-dark">Gerente (Manager)</h5>
+                        <div class="d-flex align-items-center mt-3">
+                            <div class="bg-light rounded-circle p-3 me-3 text-success">
+                                <i class="fas fa-user-tie fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ store.manager.firstName }} {{ store.manager.lastName }}</h6>
+                                <small class="text-muted">{{ store.manager.email }}</small>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer bg-white border-top-0 text-end">
+                        <small class="text-muted">Última act: {{ store.lastUpdate|date('d/m/Y') }}</small>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">No se encontraron tiendas registradas.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

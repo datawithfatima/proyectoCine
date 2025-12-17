@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agregar Copias - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Botón volver -->
+            <a href="{{ path('inventory_index') }}" class="btn btn-outline-secondary mb-4">
+                <i class="bi bi-arrow-left me-2"></i> Volver al inventario
+            </a>
+
+            <!-- Card -->
+            <div class="card film-card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i> Agregar Copias al Inventario
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-4">
+                            <label for="film_id" class="form-label fw-bold">
+                                <i class="bi bi-film me-1"></i> Película *
+                            </label>
+                            <select class="form-select" id="film_id" name="film_id" required>
+                                <option value="">Seleccione una película...</option>
+                                {% for film in films %}
+                                    <option value="{{ film.id }}">{{ film.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Selecciona la película para agregar copias</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="store_id" class="form-label fw-bold">
+                                <i class="bi bi-shop me-1"></i> Tienda *
+                            </label>
+                            <select class="form-select" id="store_id" name="store_id" required>
+                                <option value="">Seleccione una tienda...</option>
+                                {% for store in stores %}
+                                    <option value="{{ store.id }}">Tienda {{ store.id }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Tienda donde se agregarán las copias</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="copies" class="form-label fw-bold">
+                                <i class="bi bi-box-seam me-1"></i> Número de Copias *
+                            </label>
+                            <input type="number" class="form-control" id="copies" name="copies" 
+                                   min="1" max="50" value="1" required>
+                            <small class="text-muted">Cantidad de copias a agregar (máximo 50)</small>
+                        </div>
+
+                        <div class="alert alert-warning d-flex align-items-start">
+                            <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                            <div>
+                                <strong>Importante:</strong> Se crearán registros individuales en el inventario
+                                para cada copia. Asegúrate de seleccionar la película y tienda correctas.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('inventory_index') }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-1"></i> Agregar Copias
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="card mt-4 border-info">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-lightbulb text-info me-2"></i> Información
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Cada copia se registra individualmente en el sistema</li>
+                        <li>Las copias estarán disponibles inmediatamente para alquiler</li>
+                        <li>Puedes ver el inventario completo en la sección de inventario</li>
+                        <li>Para eliminar copias, usa la opción "Dar de baja" en el detalle</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

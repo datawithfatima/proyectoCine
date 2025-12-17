@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Pago{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-cash-register me-2"></i>Registrar Nuevo Pago</h4>
+                </div>
+                
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.customer) }}
+                            {{ form_widget(form.customer) }}
+                            <div class="text-danger">{{ form_errors(form.customer) }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.staff) }}
+                                {{ form_widget(form.staff) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.paymentDate) }}
+                                {{ form_widget(form.paymentDate) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.amount) }}
+                                {{ form_widget(form.amount) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.rental) }}
+                                {{ form_widget(form.rental) }}
+                                <small class="text-muted">Deje vacío si no corresponde a una renta específica.</small>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_payment_index') }}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Guardar Pago
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

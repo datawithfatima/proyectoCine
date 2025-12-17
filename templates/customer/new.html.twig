@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Cliente{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">
+        <i class="bi bi-person-plus-fill text-primary me-2"></i> Nuevo Cliente
+    </h2>
+    <a href="{{ path('customer_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                {{ form_start(form) }}
+                    {{ form_row(form.firstName) }}
+                    {{ form_row(form.lastName) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.address) }}
+                    {{ form_row(form.store) }}
+                    {{ form_row(form.active) }}
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <a href="{{ path('customer_index') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

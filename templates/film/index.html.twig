@@ -1,0 +1,433 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catálogo de Películas - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <!-- Header con estadísticas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-6 fw-bold text-gradient">
+                        <i class="bi bi-camera-reels"></i> Catálogo de Películas
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-info-circle me-1"></i> Gestión completa del catálogo cinematográfico
+                    </p>
+                </div>
+                <a href="{{ path('film_new') }}" class="btn btn-custom-primary">
+                    <i class="bi bi-plus-circle me-2"></i> Nueva Película
+                </a>
+            </div>
+        </div>
+        
+        <!-- Tarjetas de estadísticas -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="font-size: 2rem; color: #3498db;">
+                            <i class="bi bi-film"></i>
+                        </div>
+                        <div class="text-start">
+                            <div class="stat-number">{{ films|length }}</div>
+                            <div class="text-muted">Películas Total</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="font-size: 2rem; color: #2ecc71;">
+                            <i class="bi bi-calendar3"></i>
+                        </div>
+                        <div class="text-start">
+                            <div class="stat-number">2006</div>
+                            <div class="text-muted">Año Principal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="font-size: 2rem; color: #9b59b6;">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div class="text-start">
+                            <div class="stat-number">{{ films|reduce((total, film) => total + (film.length|default(0)), 0) }} min</div>
+                            <div class="text-muted">Duración Total</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="font-size: 2rem; color: #e74c3c;">
+                            <i class="bi bi-star"></i>
+                        </div>
+                        <div class="text-start">
+                            <div class="stat-number">{{ films|filter(film => film.rating == 'PG')|length }}</div>
+                            <div class="text-muted">Películas PG</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card film-card">
+            <div class="card-header">
+                <i class="bi bi-funnel me-2"></i> Filtros de Búsqueda
+            </div>
+            <div class="card-body">
+                <!-- FORMULARIO DE FILTROS (CON action y method) -->
+                <form method="get" action="{{ path('film_index') }}" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Título o Descripción</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" name="search" 
+                                   placeholder="Buscar películas..." 
+                                   value="{{ search }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Año</label>
+                        <select class="form-select" name="year">
+                            <option value="">Todos los años</option>
+                            {% for y in years %}
+                                <option value="{{ y.year }}" 
+                                        {% if selectedYear == y.year %}selected{% endif %}>
+                                    {{ y.year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Clasificación</label>
+                        <select class="form-select" name="rating">
+                            <option value="">Todas</option>
+                            <option value="G" {% if selectedRating == 'G' %}selected{% endif %}>G</option>
+                            <option value="PG" {% if selectedRating == 'PG' %}selected{% endif %}>PG</option>
+                            <option value="PG-13" {% if selectedRating == 'PG-13' %}selected{% endif %}>PG-13</option>
+                            <option value="R" {% if selectedRating == 'R' %}selected{% endif %}>R</option>
+                            <option value="NC-17" {% if selectedRating == 'NC-17' %}selected{% endif %}>NC-17</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Categoría</label>
+                        <select class="form-select" name="category">
+                            <option value="">Todas</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" 
+                                        {% if selectedCategory == cat.id %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Mostrar filtros activos -->
+                {% if search or selectedYear or selectedRating or selectedCategory %}
+                <div class="mt-3">
+                    <small class="text-muted">Filtros aplicados:</small>
+                    {% if search %}
+                        <span class="badge bg-info me-1">Buscar: "{{ search }}"</span>
+                    {% endif %}
+                    {% if selectedYear %}
+                        <span class="badge bg-info me-1">Año: {{ selectedYear }}</span>
+                    {% endif %}
+                    {% if selectedRating %}
+                        <span class="badge bg-info me-1">Clasificación: {{ selectedRating }}</span>
+                    {% endif %}
+                    {% if selectedCategory %}
+                        {% set catName = '' %}
+                        {% for cat in categories %}
+                            {% if cat.id == selectedCategory %}
+                                {% set catName = cat.name %}
+                            {% endif %}
+                        {% endfor %}
+                        <span class="badge bg-info me-1">Categoría: {{ catName }}</span>
+                    {% endif %}
+                    <a href="{{ path('film_index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar filtros
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Tabla de películas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card film-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-table me-2"></i> Listado de Películas
+                        <span class="badge bg-secondary ms-2">{{ films|length }} registros</span>
+                    </div>
+                    <div class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i> Mostrando {{ films|length }} de 1000+
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover film-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4" width="5%">ID</th>
+                                    <th width="25%">TÍTULO</th>
+                                    <th width="35%">DESCRIPCIÓN</th>
+                                    <th width="10%">AÑO</th>
+                                    <th width="10%">DURACIÓN</th>
+                                    <th width="10%">CLASIFICACIÓN</th>
+                                    <th class="text-center pe-4" width="15%">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for film in films %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="film-badge bg-secondary">#{{ film.id }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div class="bg-light rounded p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="bi bi-film text-primary"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <strong class="d-block">{{ film.title }}</strong>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-currency-dollar me-1"></i>${{ film.rentalRate|default('0.99') }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 300px;" title="{{ film.description }}">
+                                            {{ film.description }}
+                                        </div>
+                                        <small class="text-muted d-block mt-1">
+                                            <i class="bi bi-text-paragraph"></i> {{ film.description|length }} caracteres
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary film-badge">
+                                            <i class="bi bi-calendar3 me-1"></i>{{ film.releaseYear }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-clock text-muted me-2"></i>
+                                            <span>{{ film.length|default('N/A') }} min</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="rating-badge rating-{{ film.rating|default('NR') }}">
+                                            {{ film.rating|default('NR') }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center pe-4 action-buttons">
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('film_show', {'id': film.id}) }}" 
+                                               class="btn btn-outline-info btn-sm" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ path('film_edit', {'id': film.id}) }}" 
+                                               class="btn btn-outline-warning btn-sm"
+                                               data-bs-toggle="tooltip"
+                                               title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="post" 
+                                                  action="{{ path('film_delete', {'id': film.id}) }}" 
+                                                  style="display: inline;"
+                                                  data-bs-toggle="tooltip"
+                                                  title="Eliminar">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ film.id) }}">
+                                                <button type="submit" 
+                                                        class="btn btn-outline-danger btn-sm"
+                                                        onclick="return confirm('¿Eliminar \'{{ film.title }}\'?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- PAGINACION -->
+                <div class="card-footer">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <span class="text-muted">
+                Página {{ currentPage|default(1) }} de {{ totalPages|default(1) }}
+                | Mostrando {{ films|length }} de {{ totalFilms|default(1000) }} películas
+            </span>
+        </div>
+        
+        {% if totalPages|default(1) > 1 %}
+        <nav aria-label="Paginación">
+            <ul class="pagination pagination-sm mb-0">
+                <!-- Botón ANTERIOR -->
+                <li class="page-item {% if currentPage|default(1) == 1 %}disabled{% endif %}">
+                    <a class="page-link" 
+                       href="{{ path('film_index', {
+                           'page': currentPage|default(1) - 1,
+                           'search': search,
+                           'year': selectedYear,
+                           'rating': selectedRating,
+                           'category': selectedCategory
+                       }) }}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                
+                <!-- Página 1 -->
+                <li class="page-item {% if currentPage|default(1) == 1 %}active{% endif %}">
+                    <a class="page-link" 
+                       href="{{ path('film_index', {
+                           'page': 1,
+                           'search': search,
+                           'year': selectedYear,
+                           'rating': selectedRating,
+                           'category': selectedCategory
+                       }) }}">
+                        1
+                    </a>
+                </li>
+                
+                <!-- Páginas intermedias (máximo 3) -->
+                {% set startPage = max(2, currentPage|default(1) - 1) %}
+                {% set endPage = min(totalPages|default(1) - 1, currentPage|default(1) + 1) %}
+                
+                {% if startPage > 2 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                
+                {% for p in startPage..endPage %}
+                    {% if p > 1 and p < totalPages|default(1) %}
+                        <li class="page-item {% if p == currentPage|default(1) %}active{% endif %}">
+                            <a class="page-link" 
+                               href="{{ path('film_index', {
+                                   'page': p,
+                                   'search': search,
+                                   'year': selectedYear,
+                                   'rating': selectedRating,
+                                   'category': selectedCategory
+                               }) }}">
+                                {{ p }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if endPage < totalPages|default(1) - 1 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                
+                <!-- Última página (si hay más de 1 página) -->
+                {% if totalPages|default(1) > 1 %}
+                    <li class="page-item {% if currentPage|default(1) == totalPages|default(1) %}active{% endif %}">
+                        <a class="page-link" 
+                           href="{{ path('film_index', {
+                               'page': totalPages|default(1),
+                               'search': search,
+                               'year': selectedYear,
+                               'rating': selectedRating,
+                               'category': selectedCategory
+                           }) }}">
+                            {{ totalPages|default(1) }}
+                        </a>
+                    </li>
+                {% endif %}
+                
+                <!-- Botón SIGUIENTE -->
+                <li class="page-item {% if currentPage|default(1) == totalPages|default(1) %}disabled{% endif %}">
+                    <a class="page-link" 
+                       href="{{ path('film_index', {
+                           'page': currentPage|default(1) + 1,
+                           'search': search,
+                           'year': selectedYear,
+                           'rating': selectedRating,
+                           'category': selectedCategory
+                       }) }}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="bi bi-database me-3" style="font-size: 1.5rem;"></i>
+                <div>
+                    <strong>Base de datos Sakila</strong> - Esta aplicación utiliza la base de datos de ejemplo Sakila de MySQL. 
+                    Los datos mostrados son reales y forman parte de un sistema de gestión de videoclubs.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inicializar tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Efecto hover en filas
+        const rows = document.querySelectorAll('.film-table tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'rgba(52, 152, 219, 0.05)';
+            });
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+    });
+</script>
+
+<style>
+    .text-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+</style>
+{% endblock %}

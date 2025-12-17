@@ -1,0 +1,220 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ film.title }} - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Botón volver -->
+    <a href="{{ path('film_index') }}" class="btn btn-outline-secondary mb-4">
+        <i class="bi bi-arrow-left me-2"></i> Volver al listado
+    </a>
+
+    <!-- Tarjeta principal -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="bi bi-info-circle me-2"></i> Detalles de la Película
+            </h4>
+            <div>
+                <a href="{{ path('film_edit', {'id': film.id}) }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil me-1"></i> Editar
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2 class="mb-3">{{ film.title }}</h2>
+                    <p class="lead">{{ film.description }}</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <h6><i class="bi bi-calendar text-primary me-2"></i>Año</h6>
+                            <p class="fs-5">{{ film.releaseYear }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6><i class="bi bi-clock text-primary me-2"></i>Duración</h6>
+                            <p class="fs-5">{{ film.length }} minutos</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6><i class="bi bi-star text-primary me-2"></i>Clasificación</h6>
+                            <p><span class="badge bg-warning fs-6">{{ film.rating }}</span></p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6><i class="bi bi-currency-dollar text-primary me-2"></i>Precio</h6>
+                            <p class="fs-5">${{ film.rentalRate }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">Información Técnica</h6>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>ID:</strong> {{ film.id }}</p>
+                            <p><strong>Costo de reemplazo:</strong> ${{ film.replacementCost }}</p>
+                            <p><strong>Idioma:</strong> {{ language|default('Inglés') }}</p>
+                            <p><strong>Características:</strong> {{ film.specialFeatures|default('Ninguna') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RELACIONES: ACTORES Y CATEGORÍAS -->
+    <div class="row">
+        <!-- Actores -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i> Actores
+                        <span class="badge bg-light text-dark ms-2">{{ actors|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if actors|length > 0 %}
+                        <div class="list-group">
+                            {% for actor in actors %}
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-person-circle me-2 text-primary"></i>
+                                    <strong>{{ actor.name }}</strong>
+                                </div>
+                                <span class="badge bg-info rounded-pill">
+                                    {{ actor.filmCount }} películas
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No hay actores registrados para esta película.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Total: {{ actors|length }} actores
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categorías -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-tags me-2"></i> Categorías
+                        <span class="badge bg-light text-dark ms-2">{{ categories|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if categories|length > 0 %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for category in categories %}
+                            <div class="card border-info" style="width: 48%;">
+                                <div class="card-body py-2">
+                                    <h6 class="card-title mb-1">
+                                        <i class="bi bi-tag me-1"></i>{{ category.name }}
+                                    </h6>
+                                    <p class="card-text mb-0">
+                                        <small class="text-muted">
+                                            {{ category.filmCount }} películas en esta categoría
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No hay categorías asignadas a esta película.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Total: {{ categories|length }} categorías
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTARIO (opcional) -->
+    {% if inventory|length > 0 %}
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-box-seam me-2"></i> Inventario
+                <span class="badge bg-light text-dark ms-2">{{ inventory|length }} unidades</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID Inventario</th>
+                            <th>Tienda</th>
+                            <th>Última actualización</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in inventory %}
+                        <tr>
+                            <td>{{ item.id }}</td>
+                            <td>Tienda #{{ item.storeId }}</td>
+                            <td>{{ item.lastUpdate|date('d/m/Y H:i') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botones de acción -->
+    <div class="d-flex justify-content-between mt-4">
+        <div>
+            <a href="{{ path('film_index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-list-ul me-1"></i> Ver todas las películas
+            </a>
+            <a href="{{ path('film_edit', {'id': film.id}) }}" class="btn btn-warning">
+                <i class="bi bi-pencil me-1"></i> Editar Película
+            </a>
+        </div>
+        
+        <form method="post" action="{{ path('film_delete', {'id': film.id}) }}" 
+              onsubmit="return confirm('¿Eliminar \'{{ film.title }}\'?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ film.id) }}">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-1"></i> Eliminar Película
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+        transition: all 0.3s;
+    }
+    .card {
+        transition: transform 0.3s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

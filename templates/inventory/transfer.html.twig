@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transferir Copias - CineProyecto{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Botón volver -->
+            <a href="{{ path('inventory_index') }}" class="btn btn-outline-secondary mb-4">
+                <i class="bi bi-arrow-left me-2"></i> Volver al inventario
+            </a>
+
+            <!-- Card -->
+            <div class="card film-card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-arrow-left-right me-2"></i> Transferir Copias entre Tiendas
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-4">
+                            <label for="film_id" class="form-label fw-bold">
+                                <i class="bi bi-film me-1"></i> Película *
+                            </label>
+                            <select class="form-select" id="film_id" name="film_id" required>
+                                <option value="">Seleccione una película...</option>
+                                {% for film in films %}
+                                    <option value="{{ film.id }}">{{ film.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="from_store" class="form-label fw-bold">
+                                    <i class="bi bi-shop me-1"></i> Tienda Origen *
+                                </label>
+                                <select class="form-select" id="from_store" name="from_store" required>
+                                    <option value="">Seleccione tienda...</option>
+                                    {% for store in stores %}
+                                        <option value="{{ store.id }}">Tienda {{ store.id }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="to_store" class="form-label fw-bold">
+                                    <i class="bi bi-shop me-1"></i> Tienda Destino *
+                                </label>
+                                <select class="form-select" id="to_store" name="to_store" required>
+                                    <option value="">Seleccione tienda...</option>
+                                    {% for store in stores %}
+                                        <option value="{{ store.id }}">Tienda {{ store.id }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="copies" class="form-label fw-bold">
+                                <i class="bi bi-box-seam me-1"></i> Número de Copias *
+                            </label>
+                            <input type="number" class="form-control" id="copies" name="copies" 
+                                   min="1" max="20" value="1" required>
+                            <small class="text-muted">Cantidad de copias a transferir</small>
+                        </div>
+
+                        <div class="alert alert-info d-flex align-items-start">
+                            <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                            <div>
+                                <strong>Nota:</strong> Solo se pueden transferir copias que estén disponibles
+                                (no alquiladas actualmente). El sistema verificará la disponibilidad antes de realizar
+                                la transferencia.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('inventory_index') }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-arrow-right-circle me-1"></i> Transferir Copias
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Proceso de transferencia -->
+            <div class="card mt-4 border-primary">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-diagram-3 text-primary me-2"></i> Proceso de Transferencia
+                    </h6>
+                    <div class="d-flex justify-content-between align-items-center my-3">
+                        <div class="text-center">
+                            <i class="bi bi-shop text-primary" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2 fw-bold">Tienda Origen</p>
+                            <small class="text-muted">Copias disponibles</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-arrow-right text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                        <div class="text-center">
+                            <i class="bi bi-box-seam text-success" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2 fw-bold">Transferencia</p>
+                            <small class="text-muted">Actualización automática</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-arrow-right text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                        <div class="text-center">
+                            <i class="bi bi-shop text-success" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2 fw-bold">Tienda Destino</p>
+                            <small class="text-muted">Copias transferidas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validar que las tiendas sean diferentes
+document.querySelector('form').addEventListener('submit', function(e) {
+    const fromStore = document.getElementById('from_store').value;
+    const toStore = document.getElementById('to_store').value;
+    
+    if (fromStore === toStore && fromStore !== '') {
+        e.preventDefault();
+        alert('La tienda de origen y destino deben ser diferentes');
+    }
+});
+</script>
+{% endblock %}

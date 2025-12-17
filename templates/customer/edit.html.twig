@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Cliente{% endblock %}
+
+{% block body %}
+<h2 class="mb-3">
+    <i class="bi bi-pencil-square"></i> Editar Cliente
+</h2>
+
+<div class="mb-3">
+    <a href="{{ path('customer_show', {id: customer.id}) }}" class="btn btn-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="card p-4 shadow-sm">
+    {{ form_start(form) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.address) }}
+        {{ form_row(form.store) }}
+        {{ form_row(form.active) }}
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-primary">
+                <i class="bi bi-save"></i> Guardar
+            </button>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
